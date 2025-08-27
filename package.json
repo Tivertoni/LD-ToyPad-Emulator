@@ -18,7 +18,7 @@
     "express": "5.1.0",
     "node-ld": "https://github.com/Berny23/node-ld.git",
     "socket.io": "^4.8.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "bufferutil": "4.0.9",
