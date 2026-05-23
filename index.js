@@ -6,13 +6,13 @@
 */
 
 const ld = require("node-ld");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 //Setup Webserver
 const express = require("express");
 const app = express();
-const http = require("http");
+const http = require("node:http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
