@@ -63,9 +63,7 @@ function getTokenNameFromID(id) {
   const data = fs.readFileSync(tokenmapPath, "utf8");
   const dataset = JSON.parse(data);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.id == id) {
       return entry.name;
     }
@@ -78,9 +76,7 @@ function getCharacterNameFromID(id) {
   const data = fs.readFileSync(charactersMapPath, "utf8");
   const dataset = JSON.parse(data);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.id == id) {
       return entry.name;
     }
@@ -101,9 +97,7 @@ function getJSONFromUID(uid) {
   const data = fs.readFileSync(toytagsPath, "utf8");
   const dataset = JSON.parse(data);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.uid == uid) {
       return entry;
     }
@@ -117,9 +111,7 @@ function updatePadIndex(uid, index) {
   const data = fs.readFileSync(toytagsPath, "utf8");
   const dataset = JSON.parse(data);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.uid == uid) {
       entry.index = index;
       break;
@@ -134,9 +126,7 @@ function updatePadIndex(uid, index) {
 function getUIDFromIndex(index) {
   const data = fs.readFileSync(toytagsPath, "utf8");
   const dataset = JSON.parse(data);
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.index == index) {
       return entry.uid;
     }
@@ -150,9 +140,7 @@ function writeJSONData(uid, datatype, value) {
   const tags = fs.readFileSync(toytagsPath, "utf8");
   const dataset = JSON.parse(tags);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.uid == uid) {
       entry[datatype] = value;
       break;
@@ -168,9 +156,7 @@ function writeJSONBundle(uid, bundle) {
   const tags = fs.readFileSync(toytagsPath, "utf8");
   const dataset = JSON.parse(tags);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const entry = dataset[i];
-
+  for (let entry of dataset) {
     if (entry.uid == uid) {
       bundle.forEach((data) => {
         entry[data.key] = data.value;
@@ -635,9 +621,7 @@ io.on("connection", (socket) => {
     const dataset = JSON.parse(tags);
     let index = -1;
 
-    for (let i = 0; i < dataset.length; i++) {
-      const entry = dataset[i];
-
+    for (let entry of dataset) {
       if (entry.uid == uid) {
         index = i;
         break;
