@@ -67,10 +67,10 @@ $(function () {
 
     stop: function (event, ui) {
       const parentBox = ui.item.closest(".box");
-      const previousPadNum = parseInt(ui.item.attr("previous-pad-num"));
-      const newPadNum = parseInt(parentBox.attr("pad-num"));
-      const previousPadIndex = parseInt(ui.item.attr("previousPadIndex"));
-      const newPadIndex = parseInt(parentBox.attr("pad-index"));
+      const previousPadNum = Number.parseInt(ui.item.attr("previous-pad-num"));
+      const newPadNum = Number.parseInt(parentBox.attr("pad-num"));
+      const previousPadIndex = Number.parseInt(ui.item.attr("previousPadIndex"));
+      const newPadIndex = Number.parseInt(parentBox.attr("pad-index"));
 
       // If moving to the same space on the Toy Pad, remove and place in the current space
       if (
@@ -81,7 +81,7 @@ $(function () {
       ) {
         updateToyPadPosition(
           ui.item.attr("data-uid"),
-          parseInt(ui.item.attr("data-id")),
+          Number.parseInt(ui.item.attr("data-id")),
           newPadNum,
           newPadIndex,
           newPadIndex
@@ -114,18 +114,18 @@ $(function () {
           contentType: "application/json",
           url: "/remove",
           data: JSON.stringify({
-            index: parseInt(ui.sender.attr("pad-index")),
+            index: Number.parseInt(ui.sender.attr("pad-index")),
             uid: ui.item.attr("data-uid"),
           }),
         });
       }
       //If moving from the Toy Box, place tag in the game.
-      else if (parseInt(ui.sender.attr("pad-num")) === -1) {
+      else if (Number.parseInt(ui.sender.attr("pad-num")) === -1) {
         const content = {
           uid: ui.item.attr("data-uid"),
-          id: parseInt(ui.item.attr("data-id")),
-          position: parseInt($this.attr("pad-num")),
-          index: parseInt($this.attr("pad-index")),
+          id: Number.parseInt(ui.item.attr("data-id")),
+          position: Number.parseInt($this.attr("pad-num")),
+          index: Number.parseInt($this.attr("pad-index")),
         };
         console.log(content);
         $.ajax({
@@ -139,10 +139,10 @@ $(function () {
       else {
         updateToyPadPosition(
           ui.item.attr("data-uid"),
-          parseInt(ui.item.attr("data-id")),
-          parseInt($this.attr("pad-num")),
-          parseInt(ui.sender.attr("pad-index")),
-          parseInt($this.attr("pad-index"))
+          Number.parseInt(ui.item.attr("data-id")),
+          Number.parseInt($this.attr("pad-num")),
+          Number.parseInt(ui.sender.attr("pad-index")),
+          Number.parseInt($this.attr("pad-index"))
         );
       }
     },
