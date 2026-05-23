@@ -214,10 +214,6 @@ function RGBToHex(r, g, b) {
     case "#f00016":
       return "#ff2de6";
 
-    //batman stealth
-    case "#000018":
-      return "#0000ff";
-
     //shift keystone (dark colors for blink animation)
     case "#002007":
       return "#007575";
@@ -256,8 +252,6 @@ function RGBToHex(r, g, b) {
       return "#00ff00";
     //case "#f00000":
     //return "#ff0000";
-    case "#000016":
-      return "#00ffff";
 
     //scale keystone
     case "#ff1e00":
