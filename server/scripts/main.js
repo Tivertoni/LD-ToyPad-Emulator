@@ -164,15 +164,15 @@ $(function () {
 
   socket.on("Fade One", function (e) {
     console.log("IO Recieved: Fade One");
-    padindexs = [[2], [1, 4, 5], [3, 6, 7]];
-    pad = e[0];
-    speed = e[1];
-    cycles = e[2];
-    color = e[3] + "80";
+    const padindexs = [[2], [1, 4, 5], [3, 6, 7]];
+    const pad = e[0];
+    const speed = e[1];
+    const cycles = e[2];
+    const color = e[3] + "80";
     console.log("FADE ONE: ", e);
-    pads = padindexs[pad - 1];
+    const pads = padindexs[pad - 1];
     pads.forEach((element) => {
-      pad = document.getElementById("toypad" + element);
+      const padElement = document.getElementById("toypad" + element);
 
       console.log("#toypad" + element + " Color: " + color);
       $("#toypad" + element)
@@ -181,18 +181,18 @@ $(function () {
       setTimeout(() => {
         $("#toypad" + element)
           .animate()
-          .css({ backgroundColor: pad.color });
+          .css({ backgroundColor: padElement.color });
       }, speed * 100);
     });
   });
 
   socket.on("Fade All", function (e) {
     console.log("IO Recieved: Fade All");
-    padindexs = [1, 2, 3, 4, 5, 6, 7];
-    speed = e[0];
-    cycles = e[1];
+    const padindexs = [1, 2, 3, 4, 5, 6, 7];
+    const speed = e[0];
+    const cycles = e[1];
     padindexs.forEach((element) => {
-      pad = document.getElementById("toypad" + element);
+      const pad = document.getElementById("toypad" + element);
       let color;
 
       if (element == 2) color = e[2];
@@ -213,24 +213,24 @@ $(function () {
 
   socket.on("Color One", function (e) {
     console.log("IO Recieved: Color One");
-    padindexs = [[2], [1, 4, 5], [3, 6, 7]];
-    pad = e[0];
-    color = e[1] + "80";
+    const padindexs = [[2], [1, 4, 5], [3, 6, 7]];
+    const pad = e[0];
+    const color = e[1] + "80";
     console.log(color);
-    pads = padindexs[pad - 1];
+    const pads = padindexs[pad - 1];
     pads.forEach((element) => {
-      pad = document.getElementById("toypad" + element);
-      pad.setAttribute("color", e[1]);
+      const padElement = document.getElementById("toypad" + element);
+      padElement.setAttribute("color", e[1]);
       $("#toypad" + element).css({ backgroundColor: color });
     });
   });
 
   socket.on("Color All", function (e) {
     console.log("IO Recieved: Color All");
-    padindexs = [1, 2, 3, 4, 5, 6, 7];
+    const padindexs = [1, 2, 3, 4, 5, 6, 7];
     padindexs.forEach((element) => {
-      pad = document.getElementById("toypad" + element);
-      padnum = pad.pad - num;
+      const pad = document.getElementById("toypad" + element);
+      const padnum = pad.pad - num;
 
       let color;
 
@@ -613,7 +613,7 @@ function compareWithoutArticles(a, b) {
 }
 
 function removeArticles(string) {
-	words = string.split(" ");
+	const words = string.split(" ");
 	if (words.length <= 1) {
 		return string;
 	}
