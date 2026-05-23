@@ -1,8 +1,10 @@
+let characters;
+let vehicles;
+
+const socket = io();
+
 $(function () {
   // Pre-load character and vehicle data, since it is required for the operation of the page and there are multiple places it is used
-  var characters;
-  var vehicles;
-
   $.ajax({
     dataType: "json",
     url: "json/charactermap.json",
@@ -23,11 +25,10 @@ $(function () {
 
   setupFilterInputs();
 
-  var socket = io();
   socket.emit("connectionStatus");
   socket.emit("syncToyPad");
 
-  var currentMousePos = { x: -1, y: -1 };
+  const currentMousePos = { x: -1, y: -1 };
   $(document).mousemove(function (event) {
     currentMousePos.x = event.pageX;
     currentMousePos.y = event.pageY;
@@ -65,11 +66,11 @@ $(function () {
     },
 
     stop: function (event, ui) {
-      var parentBox = ui.item.closest(".box");
-      var previousPadNum = parseInt(ui.item.attr("previous-pad-num"));
-      var newPadNum = parseInt(parentBox.attr("pad-num"));
-      var previousPadIndex = parseInt(ui.item.attr("previousPadIndex"));
-      var newPadIndex = parseInt(parentBox.attr("pad-index"));
+      const parentBox = ui.item.closest(".box");
+      const previousPadNum = parseInt(ui.item.attr("previous-pad-num"));
+      const newPadNum = parseInt(parentBox.attr("pad-num"));
+      const previousPadIndex = parseInt(ui.item.attr("previousPadIndex"));
+      const newPadIndex = parseInt(parentBox.attr("pad-index"));
 
       // If moving to the same space on the Toy Pad, remove and place in the current space
       if (
@@ -93,7 +94,7 @@ $(function () {
       applyFilters(); //Refilter in case anything was in the search bar.
     },
     receive: function (event, ui) {
-      var $this = $(this);
+      const $this = $(this);
 
       if ($this.attr("id") == "remove-tokens") {
         socket.emit("deleteToken", ui.item.attr("data-uid"));
@@ -120,7 +121,7 @@ $(function () {
       }
       //If moving from the Toy Box, place tag in the game.
       else if (parseInt(ui.sender.attr("pad-num")) === -1) {
-        var content = {
+        const content = {
           uid: ui.item.attr("data-uid"),
           id: parseInt(ui.item.attr("data-id")),
           position: parseInt($this.attr("pad-num")),
@@ -192,9 +193,11 @@ $(function () {
     cycles = e[1];
     padindexs.forEach((element) => {
       pad = document.getElementById("toypad" + element);
-      if (element == 2) var color = e[2];
-      else if (element == 1 || element == 4 || element == 5) var color = e[5];
-      else if (element == 3 || element == 6 || element == 7) var color = e[8];
+      let color;
+
+      if (element == 2) color = e[2];
+      else if (element == 1 || element == 4 || element == 5) color = e[5];
+      else if (element == 3 || element == 6 || element == 7) color = e[8];
       console.log("#toypad" + element + " Color: " + color);
       color = color + "80";
       $("#toypad" + element)
@@ -228,9 +231,12 @@ $(function () {
     padindexs.forEach((element) => {
       pad = document.getElementById("toypad" + element);
       padnum = pad.pad - num;
-      if (element == 2) var color = e[0];
-      else if (element == 1 || element == 4 || element == 5) var color = e[1];
-      else if (element == 3 || element == 6 || element == 7) var color = e[2];
+
+      let color;
+
+      if (element == 2) color = e[0];
+      else if (element == 1 || element == 4 || element == 5) color = e[1];
+      else if (element == 3 || element == 6 || element == 7) color = e[2];
       pad.setAttribute("color", color);
       console.log(pad);
       color = color + "80";
@@ -260,7 +266,7 @@ $(function () {
   //Remove all token items from the lists and reread toytags.json and repopulate the lists.
   function refreshToyBox() {
     //Remove All Current Tokens
-    var boxes = document.querySelectorAll(".box");
+    const boxes = document.querySelectorAll(".box");
 
     boxes.forEach(function (toybox) {
       while (
@@ -289,7 +295,7 @@ $(function () {
   }
 
   function createItemHtml(item) {
-    var itemData;
+    let itemData;
 
     if (item.type == "character") {
       itemData = filterById(characters, item.id);
@@ -297,9 +303,10 @@ $(function () {
       itemData = filterById(vehicles, item.id);
     }
 
-    var content = "<h3>" + itemData.name + "</h3>";
-    var path = "images/" + itemData.id + ".png";
-    var url = $(location).attr("href") + "/../" + path;
+    let content = "<h3>" + itemData.name + "</h3>";
+    const path = "images/" + itemData.id + ".png";
+    const url = $(location).attr("href") + "/../" + path;
+
     if (fileExists(url)) {
       content =
         "<img src=" +
@@ -331,7 +338,7 @@ $(function () {
   }
 
   function fileExists(url) {
-    var http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
     http.open("HEAD", url, false);
     http.send();
     return http.status != 404;
@@ -363,9 +370,9 @@ $(function () {
 
   //Filter the toybox to tags matching the current text of the search bar.
   function applyNameFilter() {
-    var text = $("#name-filter").val().toLowerCase();
+    const text = $("#name-filter").val().toLowerCase();
     $(".item").each(function (index, item) {
-      var name = $(item).text().toLowerCase();
+      const name = $(item).text().toLowerCase();
       if (!name.includes(text)) {
         $(item).addClass("filtered");
       }
@@ -399,8 +406,8 @@ $(function () {
         );
     });
 
-    var worlds = [];
-    var ignoredWorlds = ["15", "16", "17", "18", "19", "20", "N/A", "Unknown"];
+    let worlds = [];
+    const ignoredWorlds = ["15", "16", "17", "18", "19", "20", "N/A", "Unknown"];
     worlds = worlds.concat(
       characters.map(function (character) {
         return character.world;
@@ -421,7 +428,7 @@ $(function () {
         $("#world-list").append('<option value="' + world + '">');
     });
 
-    var abilities = [];
+    let abilities = [];
     abilities = abilities.concat(
       characters.map(function (character) {
         return character.abilities.split(",");
@@ -449,7 +456,7 @@ $(function () {
   }
 
   function applyWorldFilter() {
-    var world = $("#tag-world-filter").val();
+    const world = $("#tag-world-filter").val();
     if (world != "") {
       $("#character-list option, #vehicle-list option").each(function (
         index,
@@ -469,7 +476,7 @@ $(function () {
   }
 
   function applyAbilityFilter() {
-    var ability = $("#tag-ability-filter").val();
+    const ability = $("#tag-ability-filter").val();
     if (ability != "") {
       $("#character-list option, #vehicle-list option").each(function (
         index,
@@ -506,8 +513,8 @@ $(function () {
   }
 
   function compareWithoutArticles(a, b) {
-    var aWithoutArticles = removeArticles(a);
-    var bWithoutArticles = removeArticles(b);
+    const aWithoutArticles = removeArticles(a);
+    const bWithoutArticles = removeArticles(b);
 
     if (aWithoutArticles > bWithoutArticles) {
       return 1;
@@ -536,15 +543,15 @@ $(function () {
   $("#character-select").submit(function (e) {
     e.preventDefault();
 
-    var name = $("#character-name").val();
+    const name = $("#character-name").val();
     $.ajax({
       method: "POST",
       contentType: "application/json",
       url: "/character",
       data: JSON.stringify({ id: filterByName(characters, name).id }),
     }).done(function () {
-      var now = Date.now();
-      var end = now + 150;
+      let now = Date.now();
+      const end = now + 150;
       while (now < end) {
         now = Date.now();
       }
@@ -556,17 +563,17 @@ $(function () {
   $("#vehicle-select").submit(function (e) {
     e.preventDefault();
 
-    var name = $("#vehicle-name").val();
+    const name = $("#vehicle-name").val();
     console.log(name);
-    var id = filterByName(vehicles, name).id;
+    const id = filterByName(vehicles, name).id;
     $.ajax({
       method: "POST",
       contentType: "application/json",
       url: "/vehicle",
       data: JSON.stringify({ id: id }),
     }).done(function () {
-      var now = Date.now();
-      var end = now + 150;
+      let now = Date.now();
+      const end = now + 150;
       while (now < end) {
         now = Date.now();
       }
@@ -580,8 +587,7 @@ $(function () {
   });
 
   //**Customize Token**
-  var dialog;
-  dialog = $("#dialog-form").dialog({
+  const dialog = $("#dialog-form").dialog({
     autoOpen: false,
     height: 400,
     width: 350,
