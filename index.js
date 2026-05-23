@@ -41,7 +41,7 @@ let isConnectedToGame = false;
 function createVehicle(id, uid, upgrades = [0, 0]) {
   const token = Buffer.alloc(180);
   token.uid = uid;
-  //console.log(upgrades);
+  
   token.writeUInt32LE(upgrades[0], 0x8c); //0x23 * 4
   token.writeUInt16LE(id, 0x90); //0x24 * 4
   token.writeUInt32LE(upgrades[1], 0x94); //0x25 * 4
@@ -178,7 +178,6 @@ function initializeToyTagsJSON() {
   });
   fs.writeFileSync(toytagsPath, JSON.stringify(dataset, null, 4));
   console.log("Initialized toytags.JSON");
-  //io.emit("refreshTokens");
 }
 
 function RGBToHex(r, g, b) {
@@ -250,8 +249,6 @@ function RGBToHex(r, g, b) {
       return "#0000ff";
     case "#006700":
       return "#00ff00";
-    //case "#f00000":
-    //return "#ff0000";
 
     //scale keystone
     case "#ff1e00":
@@ -403,10 +400,6 @@ tp.hook(tp.CMD_FADAL, (req, res) => {
     right_pad_cycles,
     right_pad_color,
   ]);
-  // setTimeout(function(){io.emit("Fade All",
-  // 					[top_pad_speed, top_pad_cycles, 'white',
-  // 					 left_pad_speed, left_pad_cycles, 'white',
-  // 					 right_pad_speed, right_pad_cycles, 'white'])}, 2500);
 });
 
 ///NOT IMPLEMENTED///
@@ -525,8 +518,6 @@ app.post("/place", (request, response) => {
   console.log("Placing tag: " + request.body.id);
   const entry = getJSONFromUID(request.body.uid);
 
-  //console.log(entry.type);
-
   if (entry.type == "character") {
     const character = createCharacter(request.body.id, request.body.uid);
     tp.place(
@@ -598,7 +589,6 @@ app.post("/vehicle", (request, response) => {
 //This is called when a token needs to be removed from the pad.
 app.delete("/remove", (request, response) => {
   console.log("Removing item: " + request.body.index);
-  // console.log('DEBUG: pad-from-token: ', tp._tokens.filter(v => v.index == request.body.index)[0].pad);
   tp.remove(request.body.index);
   console.log("Item removed: " + request.body.index);
   updatePadIndex(request.body.uid, "-1");
@@ -652,7 +642,6 @@ io.on("connection", (socket) => {
     for (let i = 1; i <= 7; i++) {
       const uid = getUIDAtPad(i);
       if (uid != -1) {
-        //console.log(uid, "is at pad #", i);
         writeJSONData(uid, "index", i);
       }
     }

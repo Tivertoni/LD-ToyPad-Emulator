@@ -47,7 +47,6 @@ $(function () {
     helper: "clone",
     appendTo: document.getElementById("focus"),
     containment: document.getElementById("focus"),
-    //cursorAt: {left: (-(($(document).width() - $(window).width())/2))},
 
     sort: function (event, ui) {
       ui.helper[0].style.left = currentMousePos.x - 20;
@@ -102,10 +101,6 @@ $(function () {
           refreshToyBox();
         }, 500);
       }
-      // else if($this.attr('id') == "edit-tokens") {
-      // 	dialog.dialog("open");
-      // 	setTimeout(function () { refreshToyBox(); }, 500)
-      // }
       else if (
         $this.attr("pad-num") == undefined ||
         ($this.children("li").length > 1 && $this.attr("id") != "toybox-tokens")
