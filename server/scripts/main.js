@@ -550,13 +550,11 @@ $(function () {
       url: "/character",
       data: JSON.stringify({ id: filterByName(characters, name).id }),
     }).done(function () {
-      let now = Date.now();
-      const end = now + 150;
-      while (now < end) {
-        now = Date.now();
-      }
-      socket.emit("syncToyPad");
-      $("#character-select")[0].reset();
+      setTimeout(() => 
+      {
+        socket.emit("syncToyPad");
+        $("#character-select")[0].reset();  
+      }, 150);
     });
   });
 
@@ -572,13 +570,11 @@ $(function () {
       url: "/vehicle",
       data: JSON.stringify({ id: id }),
     }).done(function () {
-      let now = Date.now();
-      const end = now + 150;
-      while (now < end) {
-        now = Date.now();
-      }
-      socket.emit("syncToyPad");
-      $("#vehicle-select")[0].reset();
+      setTimeout(() => 
+      {
+        socket.emit("syncToyPad");
+        $("#vehicle-select")[0].reset();   
+      }, 150);
     });
   });
 
