@@ -358,7 +358,7 @@ function refreshToyBox() {
 			toybox.lastChild.id != "deleteToken" &&
 			toybox.lastChild.id != "colorToken"
 		) {
-			toybox.removeChild(toybox.lastChild);
+			toybox.lastChild.remove();
 		}
 	});
 
