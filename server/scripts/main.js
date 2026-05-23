@@ -494,7 +494,7 @@ function setupFilterInputs() {
 	});
 
 	let worlds = [];
-	const ignoredWorlds = ["15", "16", "17", "18", "19", "20", "N/A", "Unknown"];
+	const ignoredWorlds = new Set(["15", "16", "17", "18", "19", "20", "N/A", "Unknown"]);
 	worlds = worlds.concat(
 		characters.map(function(character) {
 			return character.world;
@@ -507,7 +507,7 @@ function setupFilterInputs() {
 	);
 	worlds = getUniqueSortedValues(worlds);
 	worlds = worlds.filter(function(world) {
-		return !ignoredWorlds.includes(world);
+		return !ignoredWorlds.has(world);
 	});
 
 	$.each(worlds, function(i, world) {
