@@ -249,297 +249,6 @@ $(function () {
     $("#status").css({ display: "none" });
   });
 
-  //**Script Functions**
-
-  function filterById(jsonObject, id) {
-    return jsonObject.filter(function (jsonObject) {
-      return jsonObject["id"] == id;
-    })[0];
-  }
-
-  function filterByName(jsonObject, name) {
-    return jsonObject.filter(function (jsonObject) {
-      return jsonObject["name"] == name;
-    })[0];
-  }
-
-  //Remove all token items from the lists and reread toytags.json and repopulate the lists.
-  function refreshToyBox() {
-    //Remove All Current Tokens
-    const boxes = document.querySelectorAll(".box");
-
-    boxes.forEach(function (toybox) {
-      while (
-        toybox.lastChild &&
-        toybox.lastChild.id != "deleteToken" &&
-        toybox.lastChild.id != "colorToken"
-      ) {
-        toybox.removeChild(toybox.lastChild);
-      }
-    });
-
-    //Reread JSON file
-    $.getJSON("./json/toytags.json", function (data) {
-      tags = data;
-    }).done(function () {
-      $.each(tags, function (i, item) {
-        console.log("ID: " + item.id + " UID: " + item.uid);
-        if (item.name != "N/A" && item.index == "-1") {
-          $("#toybox-tokens").append(createItemHtml(item));
-        } else if (item.index != "-1") {
-          $("#toypad" + item.index).append(createItemHtml(item));
-        }
-        applyFilters();
-      });
-    });
-  }
-
-  function createItemHtml(item) {
-    let itemData;
-
-    if (item.type == "character") {
-      itemData = filterById(characters, item.id);
-    } else {
-      itemData = filterById(vehicles, item.id);
-    }
-
-    let content = "<h3>" + itemData.name + "</h3>";
-    const path = "images/" + itemData.id + ".png";
-    const url = $(location).attr("href") + "/../" + path;
-
-    if (fileExists(url)) {
-      content =
-        "<img src=" +
-        path +
-        " alt=" +
-        itemData.name +
-        " style='width: 100%; height: 100%; object-fit: contain; pointer-events: none;'>";
-    }
-
-    return (
-      "<li class=item draggable=true data-name=" +
-      item.name +
-      " data-type=" +
-      item.type +
-      " data-id= " +
-      item.id +
-      " data-uid=" +
-      item.uid +
-      " pad=" +
-      item.pad +
-      ' data-world="' +
-      itemData.world +
-      '" data-abilities="' +
-      itemData.abilities +
-      '">' +
-      content +
-      "</li>"
-    );
-  }
-
-  function fileExists(url) {
-    const http = new XMLHttpRequest();
-    http.open("HEAD", url, false);
-    http.send();
-    return http.status != 404;
-  }
-
-  function updateToyPadPosition(uid, id, position, currentIndex, newIndex) {
-    console.log(currentIndex);
-    $.ajax({
-      method: "DELETE",
-      contentType: "application/json",
-      url: "/remove",
-      data: JSON.stringify({ index: currentIndex, uid: uid }),
-    }).done(function () {
-      setTimeout(function () {
-        $.ajax({
-          method: "POST",
-          contentType: "application/json",
-          url: "/place",
-          data: JSON.stringify({
-            uid: uid,
-            id: id,
-            position: position,
-            index: newIndex,
-          }),
-        });
-      }, 500);
-    });
-  }
-
-  //Filter the toybox to tags matching the current text of the search bar.
-  function applyNameFilter() {
-    const text = $("#name-filter").val().toLowerCase();
-    $(".item").each(function (index, item) {
-      const name = $(item).text().toLowerCase();
-      if (!name.includes(text)) {
-        $(item).addClass("filtered");
-      }
-    });
-  }
-
-  function setupFilterInputs() {
-    $.each(characters, function (i, item) {
-      if (item.name != "Unknown" || item.name.includes("(unreleased)"))
-        $("#character-list").append(
-          '<option value="' +
-            item.name +
-            '" data-world="' +
-            item.world +
-            '" data-abilities="' +
-            item.abilities +
-            '">'
-        );
-    });
-
-    $.each(vehicles, function (i, item) {
-      if (item.name != "Unknown")
-        $("#vehicle-list").append(
-          '<option value="' +
-            item.name +
-            '" data-world="' +
-            item.world +
-            '" data-abilities="' +
-            item.abilities +
-            '">'
-        );
-    });
-
-    let worlds = [];
-    const ignoredWorlds = ["15", "16", "17", "18", "19", "20", "N/A", "Unknown"];
-    worlds = worlds.concat(
-      characters.map(function (character) {
-        return character.world;
-      })
-    );
-    worlds = worlds.concat(
-      vehicles.map(function (vehicle) {
-        return vehicle.world;
-      })
-    );
-    worlds = getUniqueSortedValues(worlds);
-    worlds = worlds.filter(function (world) {
-      return !ignoredWorlds.includes(world);
-    });
-
-    $.each(worlds, function (i, world) {
-      if (world != "Unknown")
-        $("#world-list").append('<option value="' + world + '">');
-    });
-
-    let abilities = [];
-    abilities = abilities.concat(
-      characters.map(function (character) {
-        return character.abilities.split(",");
-      })
-    );
-    abilities = abilities.concat(
-      vehicles.map(function (vehicle) {
-        return vehicle.abilities.split(",");
-      })
-    );
-    abilities = abilities.flat();
-    abilities = getUniqueSortedValues(abilities);
-
-    $.each(abilities, function (i, ability) {
-      if (ability != "Unknown")
-        $("#ability-list").append('<option value="' + ability + '">');
-    });
-  }
-
-  function applyFilters() {
-    clearFilters();
-    applyNameFilter();
-    applyWorldFilter();
-    applyAbilityFilter();
-  }
-
-  function applyWorldFilter() {
-    const world = $("#tag-world-filter").val();
-    if (world != "") {
-      $("#character-list option, #vehicle-list option").each(function (
-        index,
-        option
-      ) {
-        if ($(option).attr("data-world") != world) {
-          $(option).prop("disabled", true);
-        }
-      });
-
-      $(".item").each(function (index, item) {
-        if ($(item).attr("data-world") != world) {
-          $(item).addClass("filtered");
-        }
-      });
-    }
-  }
-
-  function applyAbilityFilter() {
-    const ability = $("#tag-ability-filter").val();
-    if (ability != "") {
-      $("#character-list option, #vehicle-list option").each(function (
-        index,
-        option
-      ) {
-        if (!$(option).attr("data-abilities").split(",").includes(ability)) {
-          $(option).prop("disabled", true);
-        }
-      });
-
-      $(".item:not(#deleteToken)").each(function (index, item) {
-        if (!$(item).attr("data-abilities").split(",").includes(ability)) {
-          $(item).addClass("filtered");
-        }
-      });
-    }
-  }
-
-  function clearFilterInputs() {
-    $("#tag-world-filter, #tag-ability-filter, #name-filter").val("");
-  }
-
-  function clearFilters() {
-    $("#character-list option, #vehicle-list option").prop("disabled", false);
-    $(".item").removeClass("filtered");
-  }
-
-  function getUniqueSortedValues(array) {
-    return array
-      .filter(function (value, index, self) {
-        return self.indexOf(value) === index;
-      })
-      .sort(compareWithoutArticles);
-  }
-
-  function compareWithoutArticles(a, b) {
-    const aWithoutArticles = removeArticles(a);
-    const bWithoutArticles = removeArticles(b);
-
-    if (aWithoutArticles > bWithoutArticles) {
-      return 1;
-    }
-
-    if (aWithoutArticles < bWithoutArticles) {
-      return -1;
-    }
-
-    return 0;
-  }
-
-  function removeArticles(string) {
-    words = string.split(" ");
-    if (words.length <= 1) {
-      return string;
-    }
-
-    if (words[0] == "The") {
-      return words.splice(1).join(" ");
-    }
-
-    return string;
-  }
-
   $("#character-select").submit(function (e) {
     e.preventDefault();
 
@@ -623,3 +332,297 @@ $(function () {
     clearFilters();
   });
 });
+
+//**Script Functions**
+
+function filterById(jsonObject, id) {
+	return jsonObject.filter(function(jsonObject) {
+		return jsonObject["id"] == id;
+	})[0];
+}
+
+function filterByName(jsonObject, name) {
+	return jsonObject.filter(function(jsonObject) {
+		return jsonObject["name"] == name;
+	})[0];
+}
+
+//Remove all token items from the lists and reread toytags.json and repopulate the lists.
+function refreshToyBox() {
+	//Remove All Current Tokens
+	const boxes = document.querySelectorAll(".box");
+
+	boxes.forEach(function(toybox) {
+		while (
+			toybox.lastChild &&
+			toybox.lastChild.id != "deleteToken" &&
+			toybox.lastChild.id != "colorToken"
+		) {
+			toybox.removeChild(toybox.lastChild);
+		}
+	});
+
+	//Reread JSON file
+	$.getJSON("./json/toytags.json", function(data) {
+		tags = data;
+	}).done(function() {
+		$.each(tags, function(i, item) {
+			console.log("ID: " + item.id + " UID: " + item.uid);
+			if (item.name != "N/A" && item.index == "-1") {
+				$("#toybox-tokens").append(createItemHtml(item));
+			} else if (item.index != "-1") {
+				$("#toypad" + item.index).append(createItemHtml(item));
+			}
+			applyFilters();
+		});
+	});
+}
+
+function createItemHtml(item) {
+	let itemData;
+
+	if (item.type == "character") {
+		itemData = filterById(characters, item.id);
+	} else {
+		itemData = filterById(vehicles, item.id);
+	}
+
+	let content = "<h3>" + itemData.name + "</h3>";
+	const path = "images/" + itemData.id + ".png";
+	const url = $(location).attr("href") + "/../" + path;
+
+	if (fileExists(url)) {
+		content =
+			"<img src=" +
+			path +
+			" alt=" +
+			itemData.name +
+			" style='width: 100%; height: 100%; object-fit: contain; pointer-events: none;'>";
+	}
+
+	return (
+		"<li class=item draggable=true data-name=" +
+		item.name +
+		" data-type=" +
+		item.type +
+		" data-id= " +
+		item.id +
+		" data-uid=" +
+		item.uid +
+		" pad=" +
+		item.pad +
+		' data-world="' +
+		itemData.world +
+		'" data-abilities="' +
+		itemData.abilities +
+		'">' +
+		content +
+		"</li>"
+	);
+}
+
+function fileExists(url) {
+	const http = new XMLHttpRequest();
+	http.open("HEAD", url, false);
+	http.send();
+	return http.status != 404;
+}
+
+function updateToyPadPosition(uid, id, position, currentIndex, newIndex) {
+	console.log(currentIndex);
+	$.ajax({
+		method: "DELETE",
+		contentType: "application/json",
+		url: "/remove",
+		data: JSON.stringify({
+			index: currentIndex,
+			uid: uid
+		}),
+	}).done(function() {
+		setTimeout(function() {
+			$.ajax({
+				method: "POST",
+				contentType: "application/json",
+				url: "/place",
+				data: JSON.stringify({
+					uid: uid,
+					id: id,
+					position: position,
+					index: newIndex,
+				}),
+			});
+		}, 500);
+	});
+}
+
+//Filter the toybox to tags matching the current text of the search bar.
+function applyNameFilter() {
+	const text = $("#name-filter").val().toLowerCase();
+	$(".item").each(function(index, item) {
+		const name = $(item).text().toLowerCase();
+		if (!name.includes(text)) {
+			$(item).addClass("filtered");
+		}
+	});
+}
+
+function setupFilterInputs() {
+	$.each(characters, function(i, item) {
+		if (item.name != "Unknown" || item.name.includes("(unreleased)"))
+			$("#character-list").append(
+				'<option value="' +
+				item.name +
+				'" data-world="' +
+				item.world +
+				'" data-abilities="' +
+				item.abilities +
+				'">'
+			);
+	});
+
+	$.each(vehicles, function(i, item) {
+		if (item.name != "Unknown")
+			$("#vehicle-list").append(
+				'<option value="' +
+				item.name +
+				'" data-world="' +
+				item.world +
+				'" data-abilities="' +
+				item.abilities +
+				'">'
+			);
+	});
+
+	let worlds = [];
+	const ignoredWorlds = ["15", "16", "17", "18", "19", "20", "N/A", "Unknown"];
+	worlds = worlds.concat(
+		characters.map(function(character) {
+			return character.world;
+		})
+	);
+	worlds = worlds.concat(
+		vehicles.map(function(vehicle) {
+			return vehicle.world;
+		})
+	);
+	worlds = getUniqueSortedValues(worlds);
+	worlds = worlds.filter(function(world) {
+		return !ignoredWorlds.includes(world);
+	});
+
+	$.each(worlds, function(i, world) {
+		if (world != "Unknown")
+			$("#world-list").append('<option value="' + world + '">');
+	});
+
+	let abilities = [];
+	abilities = abilities.concat(
+		characters.map(function(character) {
+			return character.abilities.split(",");
+		})
+	);
+	abilities = abilities.concat(
+		vehicles.map(function(vehicle) {
+			return vehicle.abilities.split(",");
+		})
+	);
+	abilities = abilities.flat();
+	abilities = getUniqueSortedValues(abilities);
+
+	$.each(abilities, function(i, ability) {
+		if (ability != "Unknown")
+			$("#ability-list").append('<option value="' + ability + '">');
+	});
+}
+
+function applyFilters() {
+	clearFilters();
+	applyNameFilter();
+	applyWorldFilter();
+	applyAbilityFilter();
+}
+
+function applyWorldFilter() {
+	const world = $("#tag-world-filter").val();
+	if (world != "") {
+		$("#character-list option, #vehicle-list option").each(function(
+			index,
+			option
+		) {
+			if ($(option).attr("data-world") != world) {
+				$(option).prop("disabled", true);
+			}
+		});
+
+		$(".item").each(function(index, item) {
+			if ($(item).attr("data-world") != world) {
+				$(item).addClass("filtered");
+			}
+		});
+	}
+}
+
+function applyAbilityFilter() {
+	const ability = $("#tag-ability-filter").val();
+	if (ability != "") {
+		$("#character-list option, #vehicle-list option").each(function(
+			index,
+			option
+		) {
+			if (!$(option).attr("data-abilities").split(",").includes(ability)) {
+				$(option).prop("disabled", true);
+			}
+		});
+
+		$(".item:not(#deleteToken)").each(function(index, item) {
+			if (!$(item).attr("data-abilities").split(",").includes(ability)) {
+				$(item).addClass("filtered");
+			}
+		});
+	}
+}
+
+function clearFilterInputs() {
+	$("#tag-world-filter, #tag-ability-filter, #name-filter").val("");
+}
+
+function clearFilters() {
+	$("#character-list option, #vehicle-list option").prop("disabled", false);
+	$(".item").removeClass("filtered");
+}
+
+function getUniqueSortedValues(array) {
+	return array
+		.filter(function(value, index, self) {
+			return self.indexOf(value) === index;
+		})
+		.sort(compareWithoutArticles);
+}
+
+function compareWithoutArticles(a, b) {
+	const aWithoutArticles = removeArticles(a);
+	const bWithoutArticles = removeArticles(b);
+
+	if (aWithoutArticles > bWithoutArticles) {
+		return 1;
+	}
+
+	if (aWithoutArticles < bWithoutArticles) {
+		return -1;
+	}
+
+	return 0;
+}
+
+function removeArticles(string) {
+	words = string.split(" ");
+	if (words.length <= 1) {
+		return string;
+	}
+
+	if (words[0] == "The") {
+		return words.splice(1).join(" ");
+	}
+
+	return string;
+}
