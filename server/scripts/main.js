@@ -364,9 +364,7 @@ function refreshToyBox() {
 
 	//Reread JSON file
 	$.getJSON("./json/toytags.json", function(data) {
-		tags = data;
-	}).done(function() {
-		$.each(tags, function(i, item) {
+    $.each(data, function(i, item) {
 			console.log("ID: " + item.id + " UID: " + item.uid);
 			if (item.name != "N/A" && item.index == "-1") {
 				$("#toybox-tokens").append(createItemHtml(item));
