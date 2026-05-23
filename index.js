@@ -641,7 +641,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("connectionStatus", () => {
-    if (isConnectedToGame == true) {
+    if (isConnectedToGame) {
       io.emit("Connection True");
     }
   });
