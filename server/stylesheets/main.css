@@ -161,7 +161,6 @@ button:active {
     border-radius: 0.5rem;
     color: #000;
     box-sizing: border-box;
-    cursor: pointer;
     box-shadow: #00000033 0 4px 12px;
     cursor: grab;
     position: relative;
@@ -237,9 +236,7 @@ button:active {
     border: solid 3px transparent;
     margin: 0;
     list-style-type: none;
-    padding: 10px;
     transition: background-color 0.25s ease-out;
-    border-radius: 0.5rem;
     height: 8em;
     width: 8em;
     display: flex;
@@ -247,7 +244,7 @@ button:active {
     justify-content: center;
     border-radius: 0.5rem;
     cursor: default;
-    padding: 10;
+    padding: 10px;
 }
 
 .box-edit>#deleteToken {
