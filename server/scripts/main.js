@@ -336,15 +336,15 @@ $(function () {
 //**Script Functions**
 
 function filterById(jsonObject, id) {
-	return jsonObject.filter(function(jsonObject) {
+	return jsonObject.find(function(jsonObject) {
 		return jsonObject["id"] == id;
-	})[0];
+	});
 }
 
 function filterByName(jsonObject, name) {
-	return jsonObject.filter(function(jsonObject) {
+	return jsonObject.find(function(jsonObject) {
 		return jsonObject["name"] == name;
-	})[0];
+	});
 }
 
 //Remove all token items from the lists and reread toytags.json and repopulate the lists.
