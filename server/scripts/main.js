@@ -230,7 +230,6 @@ $(function () {
     const padindexs = [1, 2, 3, 4, 5, 6, 7];
     padindexs.forEach((element) => {
       const pad = document.getElementById("toypad" + element);
-      const padnum = pad.pad - num;
 
       let color;
 
