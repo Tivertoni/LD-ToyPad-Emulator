@@ -603,22 +603,15 @@ io.on("connection", (socket) => {
     console.log("IO Recieved: Deleting entry " + uid + " from JSON");
     const tags = fs.readFileSync(toytagsPath, "utf8");
     const dataset = JSON.parse(tags);
-    let entryToDelete = null;
+    const index = dataset.findIndex((entry) => entry.uid == uid);
 
-    for (let entry of dataset) {
-      if (entry.uid == uid) {
-        entryToDelete = entry;
-        break;
-      }
-    }
-
-    console.log("Entry to delete: ", {entry});
-    if (entryToDelete === null) {
+    console.log("Entry to delete: ", index);
+    if (index === -1) {
       console.log("Token 404.");
       return;
     }
 
-    dataset.remove(entryToDelete);
+    dataset.splice(index, 1);
     fs.writeFile(toytagsPath, JSON.stringify(dataset, null, 4), (err) => {
       if (err) {
         console.log("Failed to write updated data to toytags.json: " + err);
